@@ -7,18 +7,19 @@ const app = express();
 const server = http.createServer(app);
 
 
-const allowedOrigins =
-  process.env.NODE_ENV === "production"
-    ? ["*"]  
-    : ["http://localhost:5173"]; 
+let io;
 
-const io = new Server(server, {
+if (process.env.NODE_ENV === "development") {
+  io = new Server(server, {
     cors: {
-        origin: allowedOrigins,
-        methods: ["GET", "POST"],
-        credentials: true
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST"],
+      credentials: true,
     }
-})
+  });
+} else {
+  io = new Server(server); // 👈 no CORS needed
+}
 
 
 export function getReceiverSocketId(userId) {
